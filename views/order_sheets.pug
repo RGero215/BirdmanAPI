@@ -1,0 +1,33 @@
+extends layout
+
+block content
+    div.top-content
+        div.inner-bg
+            div.container
+                div.row
+                    h1.pull-left All Order Sheets
+                    
+                    table(class="table table-striped table-bordered table-hover" id="table_dashboard")
+                        thead
+                            tr
+                                th(scope="col") Order Sheet ID
+                                th(scope="col") Name
+                                th(scope="col") Orders
+                                th(scope="col") USER ID
+                                th(scope="col") Created
+                                th(scope="col") Updated
+                        
+                        tbody
+                          each order_sheet in order_sheets
+                            tr
+                                td  
+                                   a(href='/users/' + order_sheet.uid + '/order_sheet/' + order_sheet._id + '/orders')= order_sheet._id
+                                   |
+                                td= order_sheet.name
+                                td= order_sheet.order.length
+                                td
+                                   a(href='/users/' + order_sheet.uid)= order_sheet.uid
+                                   | 
+                                td= moment(order_sheet.created_at).format('MMM Do YY')
+                                td= moment(order_sheet.updated_at).format('MMM Do YY')
+            

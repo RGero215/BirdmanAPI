@@ -1,0 +1,71 @@
+extends layout
+
+block content
+    div.top-content
+        div.inner-bg
+            div.container
+                div.row
+                    h1.pull-left Order:
+                        = order._id
+                    
+                    table(class="table table-striped table-bordered table-hover" id="table_dashboard")
+                        thead
+                            tr
+                                th(scope="col") Bat Order Specifications
+                                th(scope="col") Values
+                        
+                        tbody
+                            tr
+                                td Order ID
+                                td= order._id
+                            tr
+                                td Bat Category
+                                td= order.bat_category
+                            tr  
+                                td Model
+                                td= order.model
+                            tr 
+                                td Length
+                                td= order.length
+                            tr
+                                td Weigth
+                                td= order.weight
+                            tr
+                                td Wood Type
+                                td= order.wood_type
+                            tr  
+                                td Handle Color
+                                td= order.handle_color
+                            tr
+                                td Barrel Color
+                                td= order.barrel_color
+                            tr
+                                td Cup or No Cup
+                                td= order.cup_noCup
+                            tr
+                                td Logo
+                                td= order.logo
+                            tr
+                                td Nob Sticker
+                                td= order.nob_sticker
+                            tr  
+                                td Engraving
+                                td= order.engraving
+                            tr
+                                td Engraving Color
+                                td= order.engraving_color
+                            tr
+                                td Note
+                                td= order.note
+                            tr 
+                                td Date
+                                td= moment(order.date).format('MM/DD/YY')
+                            tr
+                                td Created
+                                td= moment(order.created_at).format('MMM Do YY')
+                            tr
+                                td Updated
+                                td= moment(order.updated_at).format('MMM Do YY')
+                            tr 
+                                td Order Sheet ID
+                                td= order.osid

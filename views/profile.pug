@@ -1,0 +1,71 @@
+extends layout
+
+block content
+        .row
+            .col-md-8.col-md-offset-2
+                h1.display-4
+                    img.avatar.img-circle.hidden-xs-down(src='/img/avatar.png', alt='avatar')
+                    | #{user.name}
+
+        if !currentUser
+            .row.bottomSpace
+                .col-sm-8.col-md-offset-2
+
+                    .form-box
+                        .form-top
+                            .form-top-left
+                                h3 Sign up now
+                                p Fill in the form below to get instant access:
+                            
+                            .form-top-right
+                                i(class="fa fa-pencil")
+                            
+                        .form-bottom
+                            form(role="form" action="/users/" + user._id + "/register" method="post" class="registration-form")
+
+                                .form-group
+                                    label(class="sr-only" for="form-first-name") Referral ID
+                                    input(type="text" name="referral_id" placeholder="Name..." class="hidden" id="form-first-name" value=user._id)
+
+                                .form-group
+                                    label(class="sr-only" for="form-first-name") Name
+                                    input(type="text" name="name" placeholder="Name..." class="form-first-name form-control" id="form-first-name")
+                    
+                                .form-group
+                                    label(class="sr-only" for="form-email") Email
+                                    input(type="text" name="email" placeholder="Email..." class="email form-control" id="form-email")
+                                
+                                .form-group
+                                    label(class="sr-only" for="form-password") Password
+                                    input(type="password" name="password" placeholder="Password..." class="form-password form-control" id="form-password")
+                            
+                                .form-group
+                                    label(class="sr-only" for="form-password") Password Confirmation
+                                    input(type="password" name="confirm_password" placeholder="Password Confirmation..." class="form-password form-control" id="form-password")
+                                
+                                button(type="submit" class="btn") Sign me up!
+
+        else
+            div.container
+                div.row
+                    h1.pull-left Direct Users
+                    
+                    table(class="table table-striped table-bordered table-hover" id="table_dashboard")
+                        thead
+                            tr
+                                th(scope="col") UID
+                                th(scope="col") Name
+                                th(scope="col") Email
+                                th(scope="col") Direct Users
+                                th(scope="col") Created
+                        
+                        tbody
+                          each member in teamOne
+                            tr
+                                td  
+                                   a(href='/users/' + member._id)= member._id
+                                   |
+                                td= member.name
+                                td= member.email
+                                td= member.teamOne.length
+                                td= moment(member.created_at).format('MMM Do YY')

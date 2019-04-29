@@ -1,0 +1,34 @@
+.clearfix
+    nav.navbar.navbar-default
+        .container-fluid
+            .navbar-header
+                a.navbar-brand(href='/')
+                    img.brand(src='/img/brand.png' width="45px" height="45px")
+            if !isHome
+                a.navbar-brand.dojo(href='/users/login') Dashboard
+            else
+                a.navbar-brand.dojo(href='/users/login') Birdman Bats
+
+            ul.nav.nav-pills.navbar-right
+              if isHome
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/login') Learn More
+              else if isCreate
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users') Back
+              else if is_admin
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/create') Add
+              else if is_order_sheets
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet/create') Add
+              else if is_create_order_sheet
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet') Back
+              else if is_profile && currentUser
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet') Oder Sheets
+              else if is_order 
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet/' + order_sheet._id + '/orders/create') Add
+              else if is_create_order
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet/' + order_sheet._id + '/orders') Back
+              
+              if currentUser
+                li(role='presentation'): a.btn.btn-light.btn-lg.active(href='/users/logout') Logout
+              else
+                li(role='presentation'): a.btn.btn-light.btn-lg.active(href='/users/login') Login
+

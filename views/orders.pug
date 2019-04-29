@@ -1,0 +1,43 @@
+extends layout
+
+block content
+    div.top-content
+        div.inner-bg
+            div.container
+                div.row
+                    h1.pull-left All Orders
+                    
+                    table(class="table table-striped table-bordered table-hover" id="table_dashboard")
+                        thead
+                            tr
+                                th(scope="col") Order ID
+                                th(scope="col") Bat Category
+                                th(scope="col") Model
+                                th(scope="col") L | W
+                                th(scope="col") Wood Type
+                                th(scope="col") Create
+                                th(scope="col") Update
+                                th(scope="col") Edit | Delete
+                        
+                        tbody
+                          each order in orders
+                            tr
+                                td  
+                                   a(href='/users/' + order_sheet.uid + '/order_sheet/' + order_sheet._id + '/orders/' + order._id)= order._id
+                                   |
+                                td= order.bat_category
+                                td= order.model
+                                td| #{order.length} / #{order.weight}
+                                td= order.wood_type
+                                td= moment(order.created_at).format('MMM Do YY')
+                                td= moment(order.updated_at).format('MMM Do YY')
+                                td(id="centerText")
+                                    form(action="/users/" + user._id + "/order_sheet/" + order_sheet._id + "/orders/" + order._id + "/update" method='get' id="actions")
+                                        input(formaction="/users/" + user._id + "/order_sheet/" + order_sheet._id + "/orders/" + order._id + "/update" class="btn btn-success"  type="submit" name = "edit" value="Edit")
+                                    
+                                    div(class="divider")
+
+                                    form(action="/users/" + user._id + "/order_sheet/" + order_sheet._id + "/orders/" + order._id + '/delete' method='get' id="actions")
+                                        input(formaction="/users/" + user._id + "/order_sheet/" + order_sheet._id + "/orders/" + order._id + '/delete' class="btn btn-danger"  type="submit" name="delete" value="Delete")
+                                    
+                                    

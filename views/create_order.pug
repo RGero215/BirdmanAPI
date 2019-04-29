@@ -1,0 +1,73 @@
+extends layout
+
+block content
+    div.top-content
+        div.inner-bg
+            div.container
+                div.row
+                    div.col-sm-12
+                        div.form-box
+                            div.form-top
+                                div.form-top-left
+                                    h3 Create Order
+                                    p Fill in the form below to create a new order:
+                                
+                                div.form-top-right
+                                    i(class="fa fa-pencil")
+                        
+                            div.form-bottom
+                                form(role="form" action="/users/" + user._id + "/order_sheet/" + order_sheet._id + "/orders"  method="post" class="registration-form")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-bat-category") Bat Category
+                                        input(type="text" name="bat_category" placeholder="Bat Category" class="form-first-name form-control" id="form-first-name")
+                                    
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-model") Model
+                                        input(type="text" name="model" placeholder="Model" class="form-first-name form-control" id="form-first-name")
+                                    
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-length") Length
+                                        input(type="text" name="length" placeholder="Length" class="form-first-name form-control" id="form-first-name")
+                                    
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-weight") Weight
+                                        input(type="text" name="weight" placeholder="Weight" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-weight") Wood Type
+                                        input(type="text" name="wood_type" placeholder="Wood Type" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-handle-color") Handle Color
+                                        input(type="text" name="handle_color" placeholder="Handle Color" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-barrel-color") Barrel Color
+                                        input(type="text" name="barrel_color" placeholder="Barrel Color" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-cup-or-noCup") Cup or No Cup
+                                        input(type="text" name="cup_noCup" placeholder="Cup or No Cup" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-logo") Logo
+                                        input(type="text" name="logo" placeholder="Logo" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-nob-sticker") Nob Sticker
+                                        input(type="text" name="nob_sticker" placeholder="Nob Sticker" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-engraving") Engraving
+                                        input(type="text" name="engraving" placeholder="Engraving" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-engraving-color") Engraving Color
+                                        input(type="text" name="engraving_color" placeholder="Engraving Color" class="form-first-name form-control" id="form-first-name")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-bat-category") Note
+                                        input(type="text" name="note" placeholder="Note" class="form-first-name form-control" id="form-first-name")
+                                
+                                    button(type="submit" class="btn create") Create New Order

@@ -1,0 +1,44 @@
+extends layout
+
+block content
+    div.top-content
+        div.inner-bg
+            div.container
+                div.row
+                    div.col-sm-12
+                        div.form-box
+                            div.form-top
+                                div.form-top-left
+                                    h3 Create User
+                                    p Fill in the form below to create a new user:
+                                
+                                div.form-top-right
+                                    i(class="fa fa-pencil")
+                        
+                            div.form-bottom
+                                form(role="form" action="/users/register" method="post" class="registration-form")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-name") Name
+                                        input(type="text" name="name" placeholder="Name..." class="form-first-name form-control" id="form-first-name")
+                                    
+                                    div.form-group
+                                        label(class="sr-only" for="form-last-name") Email
+                                        input(type="text" name="email" placeholder="Email..." class="form-last-name form-control" id="form-last-name")
+                                
+                                    div.form-group
+                                        label(class="sr-only" for="form-password") Password
+                                        input(type="password" name="password" placeholder="Password..." class="form-password form-control" id="form-password")
+                                
+                                    div.form-group
+                                    label(class="sr-only" for="form-password") Password Confirmation
+                                    input(type="password" name="confirm_password" placeholder="Password Confirmation..." class="form-password form-control" id="form-password")
+                                    
+                                    div.form-group
+                                    label(class="sr-only" for="form-last-name") Type
+                                    select(class="form-last-name form-control" name="is_admin")
+                                        option(value="true") YES
+                                        option(value="false") NO  
+                                
+                                    button(type="submit" class="btn create") Create New User
+                            

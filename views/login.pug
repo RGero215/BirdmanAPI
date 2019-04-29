@@ -1,0 +1,86 @@
+extends layout
+
+block content
+    .top-content
+        .inner-bg
+            .container
+                .row
+                    .col-sm-8.col-sm-offset-2.text
+                        h1 Login &amp; Register Forms
+                        .description
+                            p Sell <strong>Birdman Bats</strong> and make money  <strong>Referring Others</strong> and the sales people in your network make. 
+                            h3 <strong>4 tiers down<strong>
+
+                .row
+                    .col-sm-5
+
+                        .form-box
+                            .form-top
+                                .form-top-left
+                                    h3 Login to the app
+                                    p Enter email and password to log on:
+
+                                .form-top-right
+                                    i(class="fa fa-key")
+                                    		
+                            .form-bottom
+                                form(role="form" action="/users/login" method="post" class="login-form")
+
+                                    .form-group
+                                        label(class="sr-only" for="email") Email
+                                        input(type="text" name="email" placeholder="Email..." class="email form-control" id="email")
+                                    
+                                    .form-group
+                                        label(class="sr-only" for="form-password") Password
+                                        input(type="password" name="password" placeholder="Password..." class="form-password form-control" id="form-password")
+                                
+                                    button(type="submit" class="btn") Sign in!
+                                    
+
+                            .social-login
+                                h3 ...or login with:
+                                .social-login-buttons
+                                    a(class="btn btn-link-1 btn-link-1-facebook" href="#")
+                                        i(class="fa fa-facebook") Facebook
+                    
+                                    a(class="btn btn-link-1 btn-link-1-twitter" href="#")
+                                        i(class="fa fa-twitter") Twitter
+                                        
+                                    a(class="btn btn-link-1 btn-link-1-google-plus" href="#")
+                                        i(class="fa fa-google-plus") Google Plus
+                                    
+
+                    .col-sm-1.middle-border
+                    .col-sm-1
+
+                    .col-sm-5
+
+                        .form-box
+                            .form-top
+                                .form-top-left
+                                    h3 Sign up now
+                                    p Fill in the form below to get instant access:
+                                
+                                .form-top-right
+                                    i(class="fa fa-pencil")
+                                
+                            .form-bottom
+                                form(role="form" action="/users/register" method="post" class="registration-form")
+
+                                    .form-group
+                                        label(class="sr-only" for="form-first-name") Name
+                                        input(type="text" name="name" placeholder="Name..." class="form-first-name form-control" id="form-first-name")
+                        
+                                    .form-group
+                                        label(class="sr-only" for="form-email") Email
+                                        input(type="text" name="email" placeholder="Email..." class="email form-control" id="form-email")
+                                    
+                                    .form-group
+                                        label(class="sr-only" for="form-password") Password
+                                        input(type="password" name="password" placeholder="Password..." class="form-password form-control" id="form-password")
+                                
+                                    .form-group
+                                        label(class="sr-only" for="form-password") Password Confirmation
+                                        input(type="password" name="confirm_password" placeholder="Password Confirmation..." class="form-password form-control" id="form-password")
+                                    
+                                    button(type="submit" class="btn") Sign me up!

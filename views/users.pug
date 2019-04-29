@@ -1,0 +1,34 @@
+extends layout
+
+block content
+    div.top-content
+        div.inner-bg
+            div.container
+                div.row
+                    h1.pull-left All Users
+                    
+                    table(class="table table-striped table-bordered table-hover" id="table_dashboard")
+                        thead
+                            tr
+                                th(scope="col") UID
+                                th(scope="col") Name
+                                th(scope="col") Email
+                                th(scope="col") Order Sheets
+                                th(scope="col") Admin
+                                th(scope="col") Created
+                        
+                        tbody
+                          each user in users
+                            tr
+                                td  
+                                   a(href='/users/' + user._id)= user._id
+                                   |
+                                td= user.name
+                                td= user.email
+                                td= user.order_sheet.length
+                                td= user.is_admin
+                                td= moment(user.created_at).format('MMM Do YY')
+                               
+                        
+                    
+                            

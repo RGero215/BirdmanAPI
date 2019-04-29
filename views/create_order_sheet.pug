@@ -1,0 +1,26 @@
+extends layout
+
+block content
+    div.top-content
+        div.inner-bg
+            div.container
+                div.row
+                    div.col-sm-12
+                        div.form-box
+                            div.form-top
+                                div.form-top-left
+                                    h3 Create Order Sheet
+                                    p Fill in the form below to create a new order sheet:
+                                
+                                div.form-top-right
+                                    i(class="fa fa-pencil")
+                        
+                            div.form-bottom
+                                form(role="form" action="/users/" + user._id + "/order_sheet" method="post" class="registration-form")
+
+                                    div.form-group
+                                        label(class="sr-only" for="form-first-name") Name
+                                        input(type="text" name="name" placeholder="Name..." class="form-first-name form-control" id="form-first-name") 
+                                
+                                    button(type="submit" class="btn create") Create New Order Sheet
+                            
