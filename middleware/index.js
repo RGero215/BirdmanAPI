@@ -1,3 +1,9 @@
+var path = require('path');
+var crypto = require('crypto');
+var multer = require('multer');
+var GridFsStorage = require('multer-gridfs-storage');
+var mongoURI = 'mongodb://localhost:27017/birdman_bats'
+
 function loggedOut(req, res, next){
     if(req.session && req.session.uid) {
         return res.redirect('/users/'+ req.session.uid);
@@ -28,10 +34,34 @@ function requiresLogin(req, res, next){
     }
 }
 
+// Create storage engine
+var storage = new GridFsStorage({
+    url: mongoURI,
+    file: (req, file) => {
+      return new Promise((resolve, reject) => {
+        crypto.randomBytes(16, (err, buf) => {
+          if (err) {
+            return reject(err);
+          }
+          const filename = buf.toString('hex') + path.extname(file.originalname);
+          const fileInfo = {
+            filename: filename,
+            bucketName: 'uploads'
+          };
+          resolve(fileInfo);
+        });
+      });
+    }
+});
+const upload = multer({ storage });
+
+
+
 
 
 
 module.exports.loggedOut = loggedOut;
 module.exports.allOrderSheets = allOrderSheets;
 module.exports.requiresLogin = requiresLogin;
+module.exports.upload = upload;
 

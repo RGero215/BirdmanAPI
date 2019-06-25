@@ -49,14 +49,17 @@ block content
             div.container
                 div.row
                     h1.pull-left Direct Users
-                    
+    
                     table(class="table table-striped table-bordered table-hover" id="table_dashboard")
                         thead
                             tr
                                 th(scope="col") UID
                                 th(scope="col") Name
                                 th(scope="col") Email
-                                th(scope="col") Direct Users
+                                th(scope="col") Tier One
+                                th(scope="col") Tier Two
+                                th(scope="col") Tier Three
+                                th(scope="col") Tier Four
                                 th(scope="col") Created
                         
                         tbody
@@ -68,4 +71,7 @@ block content
                                 td= member.name
                                 td= member.email
                                 td= member.teamOne.length
+                                td= member.teamTwo.length
+                                td= member.teamThree.length
+                                td= member.teamFour.length
                                 td= moment(member.created_at).format('MMM Do YY')

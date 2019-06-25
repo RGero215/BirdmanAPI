@@ -15,11 +15,12 @@ var UserSchema = new Schema({
     password: {type: String, required: true},
     is_admin: {type: Boolean, default: false},
     order_sheet: [{type: mongoose.Schema.Types.ObjectId, ref: 'orderSheets'}],
-    teamOne: [{type: mongoose.Schema.Types.ObjectId, ref: 'teamOne'}],
-    teamTwo: [{type: mongoose.Schema.Types.ObjectId, ref: 'teamTwo'}],
-    teamThree: [{type: mongoose.Schema.Types.ObjectId, ref: 'teamThree'}],
-    teamFour: [{type: mongoose.Schema.Types.ObjectId, ref: 'teamFour'}],
+    teamOne: [{type: mongoose.Schema.Types.ObjectId, ref: 'user'}],
+    teamTwo: [{type: mongoose.Schema.Types.ObjectId, ref: 'user'}],
+    teamThree: [{type: mongoose.Schema.Types.ObjectId, ref: 'user'}],
+    teamFour: [{type: mongoose.Schema.Types.ObjectId, ref: 'user'}],
     bats_register: [{type: mongoose.Schema.Types.ObjectId, ref: 'batsRegister'}],
+    referral_id: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
     created_at: {type: Date, default: Date.now},
     updated_at: {type: Date, default: Date.now}
 })

@@ -4,6 +4,9 @@ var express = require('express');
 var app = express();
 var routes = require('./routes');
 
+var Grid = require('gridfs-stream');
+var methodOverride = require('method-override');
+
 var jsonParser = require('body-parser');
 var logger = require('morgan');
 
@@ -33,17 +36,31 @@ app.use(function(req, res, next){
 
 mongoose.set('useCreateIndex', true);
 
-mongoose.connect('mongodb://localhost:27017/birdman_bats', { useNewUrlParser: true });
+var mongoURI = 'mongodb://localhost:27017/birdman_bats'
+mongoose.connect(mongoURI, { useNewUrlParser: true });
 
 var db = mongoose.connection;
+
 
 db.on('error', (err) => {
     console.error('Connection error: ');
 })
 
+
 db.once('open', () => {
     console.log('db connection successful');
 });
+
+// var mongoURI = 'mongodb://rgero215:rgero215@ds149616.mlab.com:49616/birdman_bats'
+// var conn = mongoose.createConnection(mongoURI);
+
+
+
+// conn.once('open', () => {
+//     // Init stream
+//     gfs = Grid(db.db, mongoose.mongo);
+//     gfs.collection('uploads');
+// })
 
 // serve static files from /public
 app.use(express.static(__dirname + '/public'));
@@ -57,6 +74,7 @@ app.use(logger('dev'));
 // parse incoming requests
 app.use(jsonParser.json());
 app.use(jsonParser.urlencoded({ extended: false }));
+app.use(methodOverride('_method'));
 
 
 // Grant access from browser    
@@ -90,7 +108,7 @@ app.use((err, req, res, next) => {
 });
 
 
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || 8000;
 
 app.listen(port, () => {
     console.log('Express server is listening on port:', port);

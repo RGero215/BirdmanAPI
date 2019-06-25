@@ -1,8 +1,12 @@
 extends layout
 
 block content
-    div.top-content
-        div.inner-bg
+    .row
+            .col-md-8.col-md-offset-2
+                h1.display-4
+                    img.avatar.img-circle.hidden-xs-down(src='/img/avatar.png', alt='avatar')
+                    | #{user.name}
+                    
             div.container
                 div.row
                     h1.pull-left Tier Two
@@ -13,11 +17,14 @@ block content
                                 th(scope="col") UID
                                 th(scope="col") Name
                                 th(scope="col") Email
-                                th(scope="col") Direct Users
+                                th(scope="col") Tier One
+                                th(scope="col") Tier Two
+                                th(scope="col") Tier Three
+                                th(scope="col") Tier Four
                                 th(scope="col") Created
                         
                         tbody
-                          each member in teamOne
+                          each member in teamTwo
                             tr
                                 td  
                                    a(href='/users/' + member._id)= member._id
@@ -25,4 +32,7 @@ block content
                                 td= member.name
                                 td= member.email
                                 td= member.teamOne.length
+                                td= member.teamTwo.length
+                                td= member.teamThree.length
+                                td= member.teamFour.length
                                 td= moment(member.created_at).format('MMM Do YY')

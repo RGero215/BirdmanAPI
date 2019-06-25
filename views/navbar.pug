@@ -4,8 +4,25 @@
             .navbar-header
                 a.navbar-brand(href='/')
                     img.brand(src='/img/brand.png' width="45px" height="45px")
-            if !isHome
+            if currentUser
                 a.navbar-brand.dojo(href='/users/login') Dashboard
+                a.navbar-brand.dojo(href='/users/' + currentUser + '/order_sheet') Order Sheets
+                a.navbar-brand.dojo(href='/users/' + currentUser + '/bats_register') Register Bats
+                if is_admin
+                  a.navbar-brand.dojo(href='/users/' + currentUser + '/inventory') Inventory
+                div(class="dropdown nav nav-pills navbar-left")
+                  button(class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true")
+                    | Tiers &nbsp
+                    span(class="caret")
+                  ul(class="dropdown-menu" aria-labelledby="dropdownMenu1")
+                    li 
+                      a(href="/users/" + currentUser) Tier One
+                    li 
+                      a(href="/users/" + currentUser + "/tierTwo") Tier Two
+                    li 
+                      a(href="/users/" + currentUser + "/tierThree") Tier Three 
+                    li
+                      a(href="/users/" + currentUser + "/tierFour") Tier Four
             else
                 a.navbar-brand.dojo(href='/users/login') Birdman Bats
 
@@ -14,13 +31,17 @@
                 li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/login') Learn More
               else if isCreate
                 li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users') Back
-              else if is_admin
+              else if is_admin && !is_inventory && !is_add_to_inventory
                 li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/create') Add
               else if is_order_sheets
                 li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet/create') Add
               else if is_create_order_sheet
                 li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet') Back
-              else if is_profile && currentUser
+              else if is_inventory
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/inventory/add_to_inventory') Add
+              else if is_add_to_inventory
+                li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/inventory') Back
+              else if is_profile && currentUser 
                 li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet') Oder Sheets
               else if is_order 
                 li(role='presentation'): a.btn.btn-success.btn-lg.active(href='/users/' + currentUser + '/order_sheet/' + order_sheet._id + '/orders/create') Add

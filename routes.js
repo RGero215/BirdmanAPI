@@ -1,16 +1,29 @@
 'use strict';
+var mongoose = require('mongoose');
+mongoose.set('useCreateIndex', true);
+var Grid = require('gridfs-stream');
 
 var express = require('express');
 var router = express.Router();
 var User = require('./models/users');
 var OrderSheet = require('./models/order_sheets').OrderSheet;
 var Order = require('./models/orders').Order;
-var Team = require('./models/team').Team;
-var TierOne = require('./models/tierOne').TierOne;
-var TierTwo = require('./models/tierTwo').TierTwo;
-var TierThree = require('./models/tierThree').TierThree;
+var Inventory = require('./models/inventory').Inventory;
 var BatsRegister = require('./models/bats_register').BatsRegister;
 var mid = require('./middleware');
+
+var mongoURI = 'mongodb://localhost:27017/birdman_bats'
+let gfs;
+
+// Create mongo connection
+const conn = mongoose.createConnection(mongoURI);
+
+conn.once('open', () => {
+  // Init stream
+  gfs = Grid(conn.db, mongoose.mongo);
+  gfs.collection('uploads');
+});
+
 
 
 router.param("uid", (req, res, next, id) => {
@@ -51,6 +64,33 @@ router.param("oid", function(req, res, next, id){
         next();
     });
 });
+
+router.param("filename", function(req, res, next, id){
+    BatsRegister.find({file: {filename: req.params.filename}}, (err, doc) => {
+        if(err) return next(err);
+        if(!doc) {
+            err = new Error("Not Found");
+            err.status = 404;
+            return next(err);
+        }
+        req.filename = doc;
+        next();
+    })
+})
+
+router.param("update", function(req, res, next, id){
+    Inventory.findById(id, (err, doc) => {
+        if(err) return next(err);
+        if(!doc) {
+            err = new Error("Not Found");
+            err.status = 404;
+            return next(err);
+        }
+        req.update = doc;
+        next();
+    })
+})
+
 
 // GET /users/logout
 router.get('/logout', (req, res, next) => {
@@ -102,7 +142,7 @@ router.post('/login', (req, res, next) => {
 });
 
 // GET /users/register
-router.get('/register', mid.loggedOut, (req, res, next) => {
+router.get(':uid/register', mid.loggedOut, (req, res, next) => {
     return res.render('login', {title: 'Login', isHome: true});
 });
 
@@ -115,35 +155,13 @@ router.post('/register', (req, res, next) => {
             err.status = 400
             return next(err);
         } else {
-            if(req.body.is_admin === 'true') {
-                var isTrueSet = (req.body.is_admin === 'true')
-                User.create(req.body, (err, users) => {
-                    if(err) return next(err);
-                    res.status(201);
-                    User.findOneAndUpdate({_id: req.session.uid}, {$push: {teamOne: users._id}}, function (error, success) {
-                        if (error) {
-                            console.log("Error", error);
-                        } else {
-                            console.log("Success", success);
-                        }
-                        return next()
-                    });
-                    return res.redirect('/users')
-                });   
-            }
-            User.create(req.body, (err, users) => {
+            console.log(req.body)
+            User.create(req.body, (err, newUser) => {
                 if(err) return next(err);
                 res.status(201);
-                User.findOneAndUpdate({_id: req.session.uid}, {$push: {teamOne: users._id}}, function (error, success) {
-                    if (error) {
-                        console.log("Error", error);
-                    } else {
-                        console.log("Success", success);
-                    }
-                    return next()
-                });
-                return res.redirect('/users')
-            });
+                req.session.uid = newUser._id; //creates a session with new user
+                return res.redirect('/users/'+ newUser._id)
+            })
         }
 
     } else {
@@ -213,20 +231,77 @@ router.post('/:uid/register', (req, res, next) => {
             err.status = 400
             return next(err);
         } else {
-            User.create(req.body, (err, users) => {
-                if(err) return next(err);
-                res.status(201);
-                req.session.uid = users._id;
-                User.findOneAndUpdate({_id: req.body.referral_id}, {$push: {teamOne: users._id}}, function (error, success) {
-                    if (error) {
-                        console.log("Error", error);
-                    } else {
-                        console.log("Success", success);
-                    }
-                    return next()
+            //1. check if referal_uid is empty
+            if(!req.user.referral_id){
+                //2. assign user who refer id to new user referral uid
+                req.body.referral_id = req.user._id
+                //3. Create the new user 
+                User.create(req.body, (err, newUser) => {
+                    if(err) return next(err);
+                    res.status(201);
+                    req.session.uid = newUser._id; //creates a session with new user
+                    //6. Finds user who refer him using the request body referral id 
+                    // and append the team with new user level one info to the user who refer him team one
+                    User.findOneAndUpdate({_id: req.body.referral_id}, {$push: {teamOne: newUser._id}}, function (error, success) {
+                        if (error) {
+                            console.log("Error", error);
+                        } else {
+                            console.log("Success", success);
+                        }
+                        res.status(201)
+                        return next()
+                    });
+                    return res.redirect('/users/'+ newUser._id)
                 });
-                return res.redirect('/users/'+ users._id)
-            });
+            } else if(req.user.referral_id) {
+                //2. assign user who refer id to new user referral uid
+                req.body.referral_id = req.user._id
+                //3. Create the new user 
+                User.create(req.body, (err, newUser) => {
+                    if(err) return next(err);
+                    res.status(201);
+                    req.session.uid = newUser._id; //creates a session with new user
+                    //6. Finds user who refer him using the request body referral id 
+                    // and append the team with new user level one info to the user who refer him team one
+                    User.findOneAndUpdate({_id: req.body.referral_id}, {$push: {teamOne: newUser._id}}, function (error, userOneLevelUp) {
+                        if (error) {
+                            console.log("Error", error);
+                        } else {
+                            if(userOneLevelUp.referral_id){
+                                User.findOneAndUpdate({_id: userOneLevelUp.referral_id}, {$push: {teamTwo: newUser._id}}, function (error, userTwoLevelUp) {
+                                    if (error) {
+                                        console.log("Error", error);
+                                    } else {
+                                        if(userTwoLevelUp.referral_id){
+                                            User.findOneAndUpdate({_id: userTwoLevelUp.referral_id}, {$push: {teamThree: newUser._id}}, function (error, userThreeLevelUp) {
+                                                if (error) {
+                                                    console.log("Error", error);
+                                                } else {
+                                                    User.findOneAndUpdate({_id: userThreeLevelUp.referral_id}, {$push: {teamFour: newUser._id}}, function (error, userFourLevelUp) {
+                                                        if (error) {
+                                                            console.log("Error", error);
+                                                        } else {
+                                                            console.log("User Four Level Up", userFourLevelUp);
+                                                        }
+                                                        return next()
+                                                    });
+                                                    console.log("User Three Level Up: ", userThreeLevelUp);
+                                                }
+                                                return next()
+                                            });
+                                        }
+                                        console.log("User Two Level UP: ", userTwoLevelUp);
+                                    }
+                                    return next()
+                                });
+                            }
+                            console.log("User One Level Up: ", userOneLevelUp);
+                        }
+                        return next()
+                    });
+                    return res.redirect('/users/'+ newUser._id)
+                });
+            }
         }
 
     } else {
@@ -338,6 +413,42 @@ router.get('/:uid/order_sheet/:osid/orders/create', mid.requiresLogin, (req, res
     return res.render('create_order', {is_create_order:true, user: req.user, order_sheet: req.order_sheet})
 });
 
+// GET /users/:uid/inventory/add_to_inventory
+router.get('/:uid/inventory/add_to_inventory', mid.requiresLogin, (req, res, next) => {
+    return res.render('add_to_inventory', {is_add_to_inventory:true, user: req.user})
+});
+
+
+// GET /users/:uid/inventory
+// GET Inventory
+router.get('/:uid/inventory', mid.requiresLogin, (req, res, next) => {
+    Inventory.find({})
+            .sort({created_at: -1})
+            .exec((err, items) => {
+                if(err) return next(err);
+                console.log(items)
+                res.render('inventory', {items: items, is_inventory:true, user: req.user});
+            });
+
+});
+
+// POST /users/:uid/inventory/add_to_inventory
+router.post('/:uid/inventory', mid.requiresLogin, (req, res, next) => {
+    var inventory = new Inventory(req.body);
+    inventory.save((err, order) => {
+        if(err) return next(err);
+        res.status(201);
+        console.log(order)
+    })
+    return res.redirect('/users/' + req.user._id + '/inventory')
+});
+
+// GET /users/:uid/inventory/:update/update
+// Use GET request to UPDATE || POST AND DELETE doesn't work
+router.get('/:uid/invetory/:update/update', mid.requiresLogin, (req, res, next) => {
+    return res.render('update_inventory', {item: req.update, is_add_to_inventory:true, user: req.user})
+});
+
 // POST /users/:uid/order_sheet/:osid/ordes
 // POST create orders in an order sheet
 router.post('/:uid/order_sheet/:osid/orders', mid.requiresLogin, (req, res, next) => {
@@ -386,100 +497,176 @@ router.get('/:uid/order_sheet/:osid/orders/:oid/delete', mid.requiresLogin, (req
 
 });
 
-// GET /users/:uid/team
-// GET all the team members
-router.get('/:uid/team', (req, res, next) => {
 
-});
 
-// POST /users/:uid/team
-// POST creates team
-router.post('/:uid/team', (req, res, next) => {
-
-});
-
-// GET /users/:uid/team/:utid
-// GET specific team member (utid = user team id)
-router.get('/:uid/team/:utid', (req, res, next) => {
-
-});
-
-// POST /users/:uid/team/:utid
-// POST creates team member (utid = user team id)
-router.post('/:uid/team/:utid', (req, res, next) => {
-
-});
-
-// GET /users/:uid/team/tier_one
-// GET all tier one members
-router.get('/:uid/team/tier_one', (req, res, next) => {
-
-});
-
-// POST /users/:uid/team/tier_one
-// POST creates tier one member
-router.post('/:uid/team/tier_one', (req, res, next) => {
-
-});
-
-// GET /users/:uid/team/tier_one/:t1id
-// GET specific tier one member (t1id = tier one id)
-router.get('/:uid/team/tier_one/:t1id', (req, res, next) => {
-
-});
-
-// GET /users/:uid/team/tier_two
+// GET /users/:uid/tierTwo
 // GET all tier two members
-router.get('/:uid/team/tier_two', (req, res, next) => {
-
+router.get('/:uid/tierTwo', mid.requiresLogin, (req, res, next) => {
+    User.find({ _id: {$in: req.user.teamTwo} }, function (error, success) {
+        if (error) {
+            console.log("Error", error);
+        } else {
+            console.log("Success", success);
+            res.render('tierTwo', {user: req.user, teamTwo: success, is_profile: true});
+        }
+        
+    });
 });
 
-// GET /users/:uid/team/tier_two/:t2id
-// GET specific tier two member (t2id = tier two id)
-router.get('/:uid/team/tier_two/:t2id', (req, res, next) => {
-
+// GET /users/:uid/tierTwo
+// GET all tier two members
+router.get('/:uid/tierThree', mid.requiresLogin, (req, res, next) => {
+    User.find({ _id: {$in: req.user.teamThree} }, function (error, success) {
+        if (error) {
+            console.log("Error", error);
+        } else {
+            console.log("Success", success);
+            res.render('tierThree', {user: req.user, teamThree: success, is_profile: true});
+        }
+        
+    });
 });
 
-// GET /users/:uid/team/tier_three
-// GET all tier three members
-router.get('/:uid/team/tier_three', (req, res, next) => {
-
+// GET /users/:uid/tierTwo
+// GET all tier two members
+router.get('/:uid/tierFour', mid.requiresLogin, (req, res, next) => {
+    User.find({ _id: {$in: req.user.teamFour} }, function (error, success) {
+        if (error) {
+            console.log("Error", error);
+        } else {
+            console.log("Success", success);
+            res.render('tierFour', {user: req.user, teamFour: success, is_profile: true});
+        }
+        
+    });
 });
 
-// GET /users/:uid/team/tier_three/:t3id
-// GET specific tier three member (t2id = tier two id)
-router.get('/:uid/team/tier_three/:t3id', (req, res, next) => {
 
-});
-
-// GET /users/:uid/team/tier_three
-// GET all tier four members
-router.get('/:uid/team/tier_four', (req, res, next) => {
-
-});
-
-// GET /users/:uid/team/tier_three/:t3id
-// GET specific tier four member (t4id = tier four id)
-router.get('/:uid/team/tier_four/:t4id', (req, res, next) => {
-
-});
 
 // GET /users/:uid/bats_register
 // GET all bats register
 router.get('/:uid/bats_register', (req, res, next) => {
-
+    var isImage;
+    gfs.files.find().toArray((err, files) => {
+        // check if files
+        if(!files || files.length === 0) {
+            res.render('bat_register', {files: false});
+        } else {
+            files.map(file => {
+                if(file.contentType === 'image/jpeg' || file.contentType === 'image/png'){
+                    file.isImage = true;
+                    isImage = true;
+                } else {
+                    file.isImage = false;
+                    isImage = false;
+                }
+            })
+            BatsRegister.find({uid: req.user._id}, (err, bats) => {
+                if(err) return next(err);
+                res.status(201)
+                console.log('Bats', bats)
+                return res.render('bat_register', {files: files, bats: bats, isImage: isImage})
+            })
+            
+        }
+       
+    });
+    
 });
 
 // POST /users/:uid/bats_register
 // POST creates bat 
-router.post('/:uid/bats_register', (req, res, next) => {
-
+router.post('/:uid/bats_register', mid.requiresLogin, mid.upload.single('file'), (req, res, next) => {
+    
+    var new_bat_register = new BatsRegister({file: req.file});
+    new_bat_register.uid = req.user._id;
+    new_bat_register.save((err, bat_register) => {
+        if(err) return next(err);
+        res.status(201);
+        User.findOneAndUpdate({_id: req.user._id}, {$push: {bats_register: bat_register._id}}, function (error, success) {
+            if (error) {
+                console.log("Error", error);
+            } else {
+                console.log("Success", success);
+            }
+        });
+        res.redirect('/users/' + req.user._id + '/bats_register');
+    })
 });
+
+// GET /users/:uid/all_bats
+// Display all files
+router.get('/:uid/all_bats', (req, res, next) => {
+    gfs.files.find().toArray((err, files) => {
+        // check if files
+        if(!files || files.length === 0) {
+            return res.status(404).json({
+                err: 'No files exist'
+            })
+        }
+        return res.json(files)
+    });
+});
+
+// GET /users/:uid/all_bats/:filename
+// Display single file
+router.get('/:uid/all_bats/:filename', (req, res, next) => {
+    gfs.files.findOne({filename: req.params.filename}, (err, file) => {
+        if(!file || file.length === 0) {
+            return res.status(404).json({
+                err: 'No file exists'
+            })
+        }
+        return res.json(file);
+    })
+});
+
+// GET /users/:uid/all_bats/:filename
+router.get('/:uid/image/:filename', mid.requiresLogin, (req, res, next) => {
+    gfs.files.findOne({filename: req.params.filename}, (err, file) => {
+        if(!file || file.length === 0) {
+            return res.status(404).json({
+                err: 'No file exists'
+            })
+        }
+        if(file.contentType === 'image/jpeg' || file.contentType === 'image/png') {
+            var readstream = gfs.createReadStream(file.filename);
+            readstream.pipe(res); 
+        } else {
+            res.status(404).json({
+                err: 'Not an image'
+            })
+        }
+    })
+});
+
+router.get('/:uid/bats_register/:filename/delete', mid.requiresLogin,(req, res, next) => {
+    
+    gfs.remove({_id: req.params.filename, root: 'uploads'}, (err, gridStore) => {
+        if(err){
+            return res.status(404).json({err:err});
+        }
+       
+        User.findOneAndUpdate({_id: req.user._id}, {$pull: {bats_register: req.params.filename}}, function (error, success) {
+            if (error) {
+                console.log("Error", error);
+            } else {
+                console.log("Success", success);
+                
+            }
+        });
+
+
+     
+       
+        res.redirect('/users/' + req.user._id + '/bats_register')
+    })
+})
 
 // GET /users/:uid/bats_register
 // GET specific bat (bid = bat id)
 router.get('/:uid/bats_register/:bid', (req, res, next) => {
-
+    
 });
 
 // PUT /users/:uid/bats_register
@@ -493,10 +680,5 @@ router.put('/:uid/bats_register/:bid', (req, res, next) => {
 router.delete('/:uid/bats_register/:bid', (req, res, next) => {
 
 });
-
-
-
-
-
 
 module.exports = router;

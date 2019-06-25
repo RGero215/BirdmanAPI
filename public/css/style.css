@@ -47,6 +47,9 @@ a.nav-link  {
 .navbar-right {
 	margin-right: 1px;
 }
+.navbar-left {
+  margin-top: 3px;
+}
 .active {
 	margin-top: 5px;
 }

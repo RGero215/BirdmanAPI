@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 
 var BatsRegisterSchema = new Schema({
     uid: {type: mongoose.Schema.Types.ObjectId, ref: 'users'}, 
-    image: { data: Buffer, contentType: String },
+    file: {type: Object, required: true},
     videoURL: String,
     created_at: {type: Date, default: Date.now},
     updated_at: {type: Date, default: Date.now}
