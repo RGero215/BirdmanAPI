@@ -36,7 +36,7 @@ app.use(function(req, res, next){
 
 mongoose.set('useCreateIndex', true);
 
-var mongoURI = 'mongodb://localhost:27017/birdman_bats'
+var mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/birdman_bats'
 mongoose.connect(mongoURI, { useNewUrlParser: true });
 
 var db = mongoose.connection;
@@ -94,7 +94,7 @@ app.use('/users', routes)
 app.use((req, res, next) => {
     var err = new Error('Not Found');
     err.status = 404;
-    res.render('404')
+    res.render('welcome')
     // next(err);
 });
 
