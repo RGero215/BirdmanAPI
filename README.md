@@ -7,8 +7,20 @@ create orders, refer other sellers, multi level marketing up to 4 tiers and
 register custom bats.
 Admin can see all users, order sheets, orders, inventory and register bats.
 
-# Page
+# Use
+### npm install 
+### node app.js or nodemon app.js 
+make sure mongo is running 
+
+# license 
+Educational only. Do not use for commercial purposes. 
+
+# Documentation Page
  https://rgero215.github.io/BirdmanAPI/
+
+# Live Demo
+Welcome page: https://rocky-lowlands-20026.herokuapp.com/
+login and register: https://rocky-lowlands-20026.herokuapp.com/users/login
 
 # Admin
 If database is empty or has no users, is_admin = true. After creating the first user and admin the default users are not admin or is_admin = false.
