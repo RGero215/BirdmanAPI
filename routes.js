@@ -12,7 +12,7 @@ var Inventory = require('./models/inventory').Inventory;
 var BatsRegister = require('./models/bats_register').BatsRegister;
 var mid = require('./middleware');
 
-var mongoURI = 'mongodb://localhost:27017/birdman_bats'
+var mongoURI = process.env.MONGODB_URI ||'mongodb://localhost:27017/birdman_bats'
 let gfs;
 
 // Create mongo connection
