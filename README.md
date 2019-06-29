@@ -7,6 +7,9 @@ create orders, refer other sellers, multi level marketing up to 4 tiers and
 register custom bats.
 Admin can see all users, order sheets, orders, inventory and register bats.
 
+# Page
+ https://rgero215.github.io/BirdmanAPI/
+
 # Admin
 If database is empty or has no users, is_admin = true. After creating the first user and admin the default users are not admin or is_admin = false.
 
