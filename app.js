@@ -109,7 +109,7 @@ app.use((err, req, res, next) => {
 });
 
 
-var port = process.env.PORT || 8000;
+var port = process.env.PORT || 5000;
 
 app.listen(port, () => {
     console.log('Express server is listening on port:', port);
