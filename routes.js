@@ -111,6 +111,12 @@ router.get('/login', mid.loggedOut, (req, res, next) => {
     return res.render('login', {title: 'Login', isHome: true});
 });
 
+// GET /users/register
+router.get('/register', mid.loggedOut, (req, res, next) => {
+    console.log(req.session)
+    return res.render('login', {title: 'Login', isHome: true});
+});
+
 // POST /users/login
 router.post('/login', (req, res, next) => {
    if(req.body.email && req.body.password){
@@ -141,7 +147,7 @@ router.post('/login', (req, res, next) => {
    }
 });
 
-// GET /users/register
+// GET /users/:uid/register
 router.get(':uid/register', mid.loggedOut, (req, res, next) => {
     return res.render('login', {title: 'Login', isHome: true});
 });
@@ -155,13 +161,31 @@ router.post('/register', (req, res, next) => {
             err.status = 400
             return next(err);
         } else {
-            console.log(req.body)
-            User.create(req.body, (err, newUser) => {
-                if(err) return next(err);
-                res.status(201);
-                req.session.uid = newUser._id; //creates a session with new user
-                return res.redirect('/users/'+ newUser._id)
-            })
+            // To Count Documents of a particular collection
+            mongoose.connection.db.collection('users').count(function(err, count) {
+    
+                if( count == 0) {
+                    console.log("No Found Records.");
+                    req.body.is_admin = true
+                    User.create(req.body, (err, newUser) => {
+                        if(err) return next(err);
+                        res.status(201);
+                        req.session.uid = newUser._id; //creates a session with new user
+                        console.log(req.body)
+                        return res.redirect('/users/'+ newUser._id)
+                    })
+                }
+                else {
+                    console.log("Found Records : " + count);
+                    // console.log(req.body)
+                    User.create(req.body, (err, newUser) => {
+                        if(err) return next(err);
+                        res.status(201);
+                        req.session.uid = newUser._id; //creates a session with new user
+                        return res.redirect('/users/'+ newUser._id)
+                    })
+                }
+            });
         }
 
     } else {
@@ -182,7 +206,8 @@ router.get('/', (req, res, next) => {
     if(!req.session.is_admin || !req.session) {
         var err = new Error('You are not authorized to view this page.');
         err.status = 403;
-        return next(err);
+        res.render('not_authorized')
+        // return next(err);
     }
 
     User.find({})
@@ -621,7 +646,7 @@ router.get('/:uid/all_bats/:filename', (req, res, next) => {
     })
 });
 
-// GET /users/:uid/all_bats/:filename
+// GET /users/:uid/image/:filename
 router.get('/:uid/image/:filename', mid.requiresLogin, (req, res, next) => {
     gfs.files.findOne({filename: req.params.filename}, (err, file) => {
         if(!file || file.length === 0) {
@@ -640,6 +665,8 @@ router.get('/:uid/image/:filename', mid.requiresLogin, (req, res, next) => {
     })
 });
 
+// GET /users/:uid/bats_register/:filename/delete
+// Delete bat
 router.get('/:uid/bats_register/:filename/delete', mid.requiresLogin,(req, res, next) => {
     
     gfs.remove({_id: req.params.filename, root: 'uploads'}, (err, gridStore) => {
